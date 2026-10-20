@@ -1,0 +1,8 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      WARNING_THRESHOLD_PERCENT: "80"
+    restart: unless-stopped
