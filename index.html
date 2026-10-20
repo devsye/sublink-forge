@@ -1,0 +1,201 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090d0b">
+  <title>SubLink Forge — Dashboard</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #090d0b;
+      --panel: #111713;
+      --line: #26342a;
+      --green: #4ade80;
+      --muted: #91a096;
+      --red: #ef4444;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: #f4f7f4;
+      font: 15px system-ui, sans-serif;
+    }
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px; border-bottom: 1px solid var(--line);
+    }
+    .brand { font-weight: 800; font-size: 19px; }
+    .brand span { color: var(--green); }
+    main { max-width: 1050px; margin: auto; padding: 24px 16px; }
+    h1 { font-size: 26px; margin-bottom: 6px; }
+    p, .muted { color: var(--muted); }
+    .grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 12px; margin: 22px 0;
+    }
+    .card {
+      background: var(--panel); border: 1px solid var(--line);
+      border-radius: 16px; padding: 18px; min-width: 0;
+    }
+    .number { font-size: 25px; font-weight: 750; margin: 12px 0 5px; }
+    .green { color: var(--green); }
+    .bar {
+      height: 8px; background: #29332c; border-radius: 10px;
+      overflow: hidden; margin-top: 15px;
+    }
+    .fill { height: 100%; width: 0; background: var(--green); }
+    .warning .fill { background: var(--red); }
+    .warning { border-color: #713333; }
+    input, button {
+      width: 100%; padding: 13px; border-radius: 10px;
+      border: 1px solid var(--line); font: inherit;
+    }
+    input { background: #090d0b; color: white; margin: 12px 0; }
+    button {
+      background: var(--green); color: #07120a; font-weight: 750;
+      border: 0; cursor: pointer;
+    }
+    .status { margin-top: 12px; overflow-wrap: anywhere; }
+    .section-title { margin-top: 28px; }
+    footer { padding: 25px; text-align: center; color: var(--muted); }
+    @media (min-width: 700px) {
+      .grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+      main { padding-top: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">SubLink <span>Forge</span></div>
+    <button id="lang" style="width:auto">فارسی</button>
+  </header>
+
+  <main>
+    <p class="muted" id="eyebrow">SUBSCRIPTION CONTROL CENTER</p>
+    <h1 id="heading">Your subscriptions, unified.</h1>
+    <p id="intro">One link. Clear usage. Better control.</p>
+
+    <div class="grid">
+      <section class="card">
+        <div class="muted" id="usageLabel">Traffic used</div>
+        <div class="number" id="traffic">—</div>
+        <div class="muted" id="trafficDetail">Waiting for real source data</div>
+        <div class="bar"><div class="fill" id="trafficBar"></div></div>
+      </section>
+      <section class="card">
+        <div class="muted" id="timeLabel">Subscription time</div>
+        <div class="number" id="time">Unknown</div>
+        <div class="muted" id="timeDetail">Expiry not available yet</div>
+        <div class="bar"><div class="fill" id="timeBar"></div></div>
+      </section>
+      <section class="card">
+        <div class="muted" id="linksLabel">Active links</div>
+        <div class="number">0</div>
+        <div class="muted" id="linksDetail">No sources connected</div>
+      </section>
+      <section class="card">
+        <div class="muted" id="healthLabel">System status</div>
+        <div class="number green" id="health">Ready</div>
+        <div class="muted" id="healthDetail">Demo interface</div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2 id="addHeading">Connect a subscription</h2>
+      <p id="addText">Add a source URL to begin. This prototype does not fetch or store it yet.</p>
+      <form id="sourceForm">
+        <label for="source" id="sourceLabel">Subscription URL</label>
+        <input id="source" type="url" placeholder="https://example.com/sub/…" required>
+        <button id="submit" type="submit">Add source</button>
+      </form>
+      <div class="status muted" id="status" aria-live="polite"></div>
+    </section>
+
+    <h2 class="section-title" id="analyticsHeading">Usage analytics</h2>
+    <section class="card">
+      <p id="analyticsText">
+        Historical charts will appear after the backend starts collecting usage snapshots.
+      </p>
+      <div class="muted">API: not connected · Database: not connected</div>
+    </section>
+  </main>
+
+  <footer>SubLink Forge · Secure by design</footer>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    let fa = false;
+
+    const copy = {
+      en: {
+        eyebrow: "SUBSCRIPTION CONTROL CENTER",
+        heading: "Your subscriptions, unified.",
+        intro: "One link. Clear usage. Better control.",
+        usageLabel: "Traffic used", trafficDetail: "Waiting for real source data",
+        timeLabel: "Subscription time", time: "Unknown",
+        timeDetail: "Expiry not available yet", linksLabel: "Active links",
+        linksDetail: "No sources connected", healthLabel: "System status",
+        health: "Ready", healthDetail: "Demo interface",
+        addHeading: "Connect a subscription",
+        addText: "Add a source URL to begin. This prototype does not fetch or store it yet.",
+        sourceLabel: "Subscription URL", submit: "Add source",
+        analyticsHeading: "Usage analytics",
+        analyticsText: "Historical charts will appear after the backend starts collecting usage snapshots.",
+        lang: "فارسی", invalid: "Please enter a valid HTTPS URL.",
+        accepted: "URL format accepted locally. No connection was made."
+      },
+      fa: {
+        eyebrow: "مرکز مدیریت اشتراک",
+        heading: "همهٔ اشتراک‌ها، یکجا.",
+        intro: "یک لینک؛ مصرف شفاف؛ کنترل بهتر.",
+        usageLabel: "مصرف ترافیک", trafficDetail: "در انتظار اطلاعات واقعی منبع",
+        timeLabel: "زمان اشتراک", time: "نامشخص",
+        timeDetail: "تاریخ انقضا هنوز دریافت نشده", linksLabel: "لینک‌های فعال",
+        linksDetail: "هنوز منبعی متصل نشده", healthLabel: "وضعیت سیستم",
+        health: "آماده", healthDetail: "رابط آزمایشی",
+        addHeading: "اتصال اشتراک",
+        addText: "آدرس منبع را وارد کن. این نسخه هنوز آن را دریافت یا ذخیره نمی‌کند.",
+        sourceLabel: "آدرس اشتراک", submit: "افزودن منبع",
+        analyticsHeading: "تحلیل مصرف",
+        analyticsText: "نمودارهای تاریخی پس از راه‌اندازی بک‌اند و ثبت دوره‌ای مصرف نمایش داده می‌شوند.",
+        lang: "English", invalid: "لطفاً یک آدرس HTTPS معتبر وارد کن.",
+        accepted: "ساختار آدرس بررسی شد؛ هیچ اتصالی برقرار نشد."
+      }
+    };
+
+    function render() {
+      const c = fa ? copy.fa : copy.en;
+      document.documentElement.lang = fa ? "fa" : "en";
+      document.documentElement.dir = fa ? "rtl" : "ltr";
+      Object.keys(c).forEach(key => {
+        const el = $(key);
+        if (el) el.textContent = c[key];
+      });
+      $("lang").textContent = c.lang;
+    }
+
+    $("lang").addEventListener("click", () => {
+      fa = !fa;
+      render();
+    });
+
+    $("sourceForm").addEventListener("submit", event => {
+      event.preventDefault();
+      let url;
+      try { url = new URL($("source").value.trim()); }
+      catch {
+        $("status").textContent = fa ? copy.fa.invalid : copy.en.invalid;
+        return;
+      }
+      if (url.protocol !== "https:") {
+        $("status").textContent = fa ? copy.fa.invalid : copy.en.invalid;
+        return;
+      }
+      $("status").textContent = fa ? copy.fa.accepted : copy.en.accepted;
+    });
+
+    render();
+  </script>
+</body>
+</html>
